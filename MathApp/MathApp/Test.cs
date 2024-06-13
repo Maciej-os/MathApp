@@ -1,4 +1,6 @@
-﻿namespace MathApp
+﻿using System.Diagnostics;
+
+namespace MathApp
 {
     public class Test
     {
@@ -24,6 +26,8 @@
             set { }
         }
 
+        public List<float> pointsInMemory = new List<float>();
+        
         public static void Introduction()
         {
             Console.WriteLine("---------------------------------------------------------------------------------");
@@ -48,10 +52,21 @@
                 RecordPoints(studentPoints);
                 Console.WriteLine($"Uzyskałeś punktów: {studentPoints}");
                 Console.WriteLine("----------------------");
+                this.pointsInMemory.Add(studentPoints);
             }
 
             var statistics = this.GetStatistics();
-            Console.WriteLine($"Wyniki dla pracownika {this.Name} {this.Surname} poniżej");
+            Console.WriteLine();
+            Console.WriteLine($"Wszystkie wyniki studenta {this.Name} {this.Surname} zdobyte do tej pory:");
+            Console.WriteLine();
+            Console.WriteLine($"Średnia: {statistics.Avg:N2}");
+            Console.WriteLine($"Min: {statistics.Min}");
+            Console.WriteLine($"Max: {statistics.Max}");
+            Console.WriteLine($"Ocena: {statistics.AvgLetter}");
+
+            statistics = this.GetMemoryStatistics();
+            Console.WriteLine();
+            Console.WriteLine($"Wyniki studenta {this.Name} {this.Surname} tylko z ostatniego testu:");
             Console.WriteLine();
             Console.WriteLine($"Średnia: {statistics.Avg:N2}");
             Console.WriteLine($"Min: {statistics.Min}");
@@ -179,6 +194,17 @@
 
                     }
                 }
+            }
+            return statistics;
+        }
+
+        public Statistics GetMemoryStatistics()
+        {
+            var statistics = new Statistics();
+
+            foreach (var grade in this.pointsInMemory)
+            {
+                statistics.AddGrade(grade);
             }
             return statistics;
         }
