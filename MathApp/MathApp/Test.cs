@@ -21,13 +21,13 @@ namespace MathApp
 
         public int ChanceCounter { get; private set; }
 
-        private string FileName
+        public string FileName
         {
             get
             {
                 return this.FileName = $"C:\\Raports\\{this.Name}_{this.Surname}_points.txt";
             }
-            set { }
+            private set { }
         }
 
         public List<float> pointsInMemory = new List<float>();
@@ -47,8 +47,8 @@ namespace MathApp
 
             for (int i = 0; i < number; i++)
             {
-                bool isValidInput = false;
                 var answer = Run();
+                bool isValidInput = false;
                 this.ChanceCounter = 1;
                 int studentPoints = 0;
                 do
@@ -72,11 +72,10 @@ namespace MathApp
                 } while (!isValidInput);
 
                 RecordPoints(studentPoints);
+                this.pointsInMemory.Add(studentPoints);
                 Console.WriteLine($"Uzyskałeś punktów: {studentPoints}");
                 Console.WriteLine("----------------------");
-                this.pointsInMemory.Add(studentPoints);
-
-
+                
             }
 
             var statistics = this.GetFileStatistics();
