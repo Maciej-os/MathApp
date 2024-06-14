@@ -32,7 +32,7 @@ Console.WriteLine("1 - oznacza Studia DZIENNE");
 Console.WriteLine("2 - oznacza Studia ZAOCZNE");
 
 string studyTime = stringVer.CleanWhiteMarks(Console.ReadLine());
-bool isAnswerAccepatble = false;
+bool isValidAnswer = false;
 
 do
 {
@@ -42,7 +42,7 @@ do
             {
                 var student01 = new StudentFullTime(name, surname);
                 student01.StartTest();
-                isAnswerAccepatble = true;
+                isValidAnswer = true;
                 break;
             }
 
@@ -50,7 +50,7 @@ do
             {
                 var student01 = new StudentPartTime(name, surname);
                 student01.StartTest();
-                isAnswerAccepatble = true;
+                isValidAnswer = true;
                 break;
             }
         case "q":
@@ -64,7 +64,4 @@ do
             }
             break;
     }
-} while (!isAnswerAccepatble);
-
-
-
+} while (!isValidAnswer);

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MathApp
 {
@@ -55,7 +56,7 @@ namespace MathApp
                 this.pointsInMemory.Add(studentPoints);
             }
 
-            var statistics = this.GetStatistics();
+            var statistics = this.GetFileStatistics();
             Console.WriteLine();
             Console.WriteLine($"Wszystkie wyniki studenta {this.Name} {this.Surname} zdobyte do tej pory:");
             Console.WriteLine();
@@ -66,12 +67,13 @@ namespace MathApp
 
             statistics = this.GetMemoryStatistics();
             Console.WriteLine();
-            Console.WriteLine($"Wyniki studenta {this.Name} {this.Surname} tylko z ostatniego testu:");
+            Console.WriteLine($"Wyniki studenta {this.Name} {this.Surname} tylko z ostatniego testu");
             Console.WriteLine();
             Console.WriteLine($"Średnia: {statistics.Avg:N2}");
             Console.WriteLine($"Min: {statistics.Min}");
             Console.WriteLine($"Max: {statistics.Max}");
             Console.WriteLine($"Ocena: {statistics.AvgLetter}");
+
 
         }
 
@@ -79,7 +81,8 @@ namespace MathApp
         {
             var rand = new RandomDigit();
 
-            this.DigitOne = rand.DigitGenerator(0, 9);
+            //this.DigitOne = rand.DigitGenerator(0, 9);
+            this.DigitOne = 0;
             this.DigitTwo = rand.DigitGenerator(1, 9);
 
             Console.WriteLine();
@@ -92,32 +95,35 @@ namespace MathApp
 
         public int AnswerAnalysis(string answer)
         {
+            int correctResult = this.DigitOne * this.DigitTwo;
             int chanceCounter = 1;
             int number;
-            int.TryParse(answer, out number);
-            int correctResult = this.DigitOne * this.DigitTwo;
+            bool isValidAnswer = false;
 
-            while (number != correctResult)
+            while(!isValidAnswer)
             {
-                while (!int.TryParse(answer, out number))
+                if(int.TryParse(answer, out number))//czy jest to liczba?
+                {
+                    if (number == correctResult)//czy liczba jest poprawna?
+                    {
+                        isValidAnswer = true;
+                        break;
+                    }
+                    
+                    Console.WriteLine("Niewłaściwa odpowiedź! Zastanów się jeszcze raz...");
+                    
+                }
+                else
                 {
                     answer = answer.Trim();
-                    if (answer == "q" || answer == "Q")
+                    if (answer == "q" || answer == "Q")//czy jest to wyjście?
                     {
                         return -1;
                     }
+
                     Console.WriteLine("Podaj wartość numeryczną: ");
-                    chanceCounter++;
-                    answer = Console.ReadLine();
-
+                    
                 }
-
-                if (number == correctResult)
-                {
-                    break;
-                }
-
-                Console.WriteLine("Niewłaściwa odpowiedź! Zastanów się jeszcze raz...");
                 chanceCounter++;
                 answer = Console.ReadLine();
             }
@@ -156,7 +162,7 @@ namespace MathApp
 
             }
         }
-        public Statistics GetStatistics()
+        public Statistics GetFileStatistics()
         {
             var statistics = new Statistics();
 
