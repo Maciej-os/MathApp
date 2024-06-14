@@ -14,9 +14,12 @@ namespace MathApp
         public string Name { get; private set; }
 
         public string Surname { get; private set; }
+
         public int DigitOne { get; private set; }
 
         public int DigitTwo { get; private set; }
+
+        public int ChanceCounter { get; private set; }
 
         private string FileName
         {
@@ -28,7 +31,7 @@ namespace MathApp
         }
 
         public List<float> pointsInMemory = new List<float>();
-        
+
         public static void Introduction()
         {
             Console.WriteLine("---------------------------------------------------------------------------------");
@@ -41,19 +44,39 @@ namespace MathApp
 
         public void TestPerform(int number)
         {
+
             for (int i = 0; i < number; i++)
             {
-                var studentAnswer = Run();
-                var studentCorrectAnswerIteration = AnswerAnalysis(studentAnswer);
-                var studentPoints = AnswerPoints(studentCorrectAnswerIteration);
-                if (studentPoints == -1)
+                bool isValidInput = false;
+                var answer = Run();
+                this.ChanceCounter = 1;
+                int studentPoints = 0;
+                do
                 {
-                    return;
-                }
+                    try
+                    {
+                        AnswerAnalysis(answer);
+                        studentPoints = AnswerPoints(this.ChanceCounter);
+                        if (studentPoints == -1)
+                        {
+                            return;
+                        }
+                        isValidInput = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine("Spróbuj jeszcze raz...");
+                        answer = Console.ReadLine();
+                    }
+                } while (!isValidInput);
+
                 RecordPoints(studentPoints);
                 Console.WriteLine($"Uzyskałeś punktów: {studentPoints}");
                 Console.WriteLine("----------------------");
                 this.pointsInMemory.Add(studentPoints);
+
+
             }
 
             var statistics = this.GetFileStatistics();
@@ -81,8 +104,7 @@ namespace MathApp
         {
             var rand = new RandomDigit();
 
-            //this.DigitOne = rand.DigitGenerator(0, 9);
-            this.DigitOne = 0;
+            this.DigitOne = rand.DigitGenerator(0, 9);
             this.DigitTwo = rand.DigitGenerator(1, 9);
 
             Console.WriteLine();
@@ -93,45 +115,45 @@ namespace MathApp
 
         }
 
-        public int AnswerAnalysis(string answer)
+        public void AnswerAnalysis(string answer)
         {
             int correctResult = this.DigitOne * this.DigitTwo;
-            int chanceCounter = 1;
             int number;
             bool isValidAnswer = false;
 
-            while(!isValidAnswer)
+            while (!isValidAnswer)
             {
-                if(int.TryParse(answer, out number))//czy jest to liczba?
+                if (int.TryParse(answer, out number))//czy jest to liczba?
                 {
                     if (number == correctResult)//czy liczba jest poprawna?
                     {
                         isValidAnswer = true;
                         break;
                     }
-                    
+                    this.ChanceCounter++;
                     Console.WriteLine("Niewłaściwa odpowiedź! Zastanów się jeszcze raz...");
-                    
+
+
                 }
                 else
                 {
                     answer = answer.Trim();
                     if (answer == "q" || answer == "Q")//czy jest to wyjście?
                     {
-                        return -1;
+                        this.ChanceCounter = -1;
+                        return;
                     }
-
-                    Console.WriteLine("Podaj wartość numeryczną: ");
-                    
+                    this.ChanceCounter++;
+                    throw new Exception("Wprowadzono niewłaściwą wartość");
                 }
-                chanceCounter++;
+
                 answer = Console.ReadLine();
             }
 
             Console.WriteLine("----------------------");
             Console.WriteLine("GRATULACJE!!!");
 
-            return chanceCounter;
+            ;
 
         }
 
@@ -150,14 +172,14 @@ namespace MathApp
             }
         }
 
-        public void RecordPoints(int points)
+        public void RecordPoints(int studentPoints)
         {
 
-            if (points >= 0)
+            if (studentPoints >= 0)
             {
                 using (var writer = File.AppendText(this.FileName))
                 {
-                    writer.WriteLine(points);
+                    writer.WriteLine(studentPoints);
                 }
 
             }
