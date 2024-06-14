@@ -1,6 +1,6 @@
 ﻿namespace MathApp
 {
-    public class StudentFullTime: StudentBase
+    public class StudentFullTime : StudentBase
     {
         public StudentFullTime(string name, string surname) : base(name, surname)
         {
@@ -11,6 +11,9 @@
         {
             var test01 = new Test(this.Name, this.Surname);
             test01.TestPerform(4);
-        }        
+        }
+
+        
     }
 }
+

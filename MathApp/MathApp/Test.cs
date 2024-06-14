@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace MathApp
+﻿namespace MathApp
 {
     public class Test
     {
+        public delegate void PointsAddedDelegate(object sender, EventArgs args);
+
+        public event PointsAddedDelegate PointsAdded;
         public Test(string name, string surname)
         {
             this.Name = name;
@@ -20,6 +20,8 @@ namespace MathApp
         public int DigitTwo { get; private set; }
 
         public int ChanceCounter { get; private set; }
+
+        public int StudentPoints { get; private set; }
 
         public string FileName
         {
@@ -50,14 +52,14 @@ namespace MathApp
                 var answer = Run();
                 bool isValidInput = false;
                 this.ChanceCounter = 1;
-                int studentPoints = 0;
+                this.StudentPoints = 0;
                 do
                 {
                     try
                     {
                         AnswerAnalysis(answer);
-                        studentPoints = AnswerPoints(this.ChanceCounter);
-                        if (studentPoints == -1)
+                        this.StudentPoints = AnswerPoints(this.ChanceCounter);
+                        if (this.StudentPoints == -1)
                         {
                             return;
                         }
@@ -71,12 +73,21 @@ namespace MathApp
                     }
                 } while (!isValidInput);
 
-                RecordPoints(studentPoints);
-                this.pointsInMemory.Add(studentPoints);
-                Console.WriteLine($"Uzyskałeś punktów: {studentPoints}");
-                Console.WriteLine("----------------------");
-                
+                RecordPoints(this.StudentPoints);
+                this.pointsInMemory.Add(this.StudentPoints);
+
+                this.PointsAdded = Test01_PointsAdded;
+
+                if (PointsAdded != null)
+                {
+                    PointsAdded(this, new EventArgs());
+                }
+
+
+
             }
+
+
 
             var statistics = this.GetFileStatistics();
             Console.WriteLine();
@@ -97,6 +108,14 @@ namespace MathApp
             Console.WriteLine($"Ocena: {statistics.AvgLetter}");
 
 
+        }
+
+        private void Test01_PointsAdded(object sender, EventArgs args)
+        {
+            Console.WriteLine("----------------------");
+            Console.WriteLine("GRATULACJE!!!");
+            Console.WriteLine($"Uzyskałeś punktów: {this.StudentPoints}");
+            Console.WriteLine("----------------------");
         }
 
         public string Run()
@@ -148,11 +167,6 @@ namespace MathApp
 
                 answer = Console.ReadLine();
             }
-
-            Console.WriteLine("----------------------");
-            Console.WriteLine("GRATULACJE!!!");
-
-            ;
 
         }
 
